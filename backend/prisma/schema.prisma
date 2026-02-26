@@ -1,0 +1,25 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+// al parecer ya no se necesita el datasource, se puede configurar con la url del .env para usarla en prisma.config.ts
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")  // marca error porque segun "ya no se maneja este parametro", se tiene que mantener para el correcto funcionamiento de prisma.
+}
+
+// aqui de definen las tablas, campos y relaciones
+// modelo de ejemplo, modificar segun se necesite
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
