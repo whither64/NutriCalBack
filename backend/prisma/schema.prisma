@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 // al parecer ya no se necesita el datasource, se puede configurar con la url del .env para usarla en prisma.config.ts
 datasource db {
@@ -16,10 +15,30 @@ datasource db {
 
 // aqui de definen las tablas, campos y relaciones
 // modelo de ejemplo, modificar segun se necesite
+
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  password          String
+  name              String
+  isVerified        Boolean  @default(false)
+  verificationToken String?
+  resetToken        String?
+  resetTokenExpiry  DateTime?
+  createdAt         DateTime @default(now())
+
+  foods             Food[]
 }
 
+model Food {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  name      String
+  calories  Float
+  protein   Float
+  carbs     Float
+  fat       Float
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

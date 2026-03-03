@@ -1,18 +1,22 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import pg from 'pg'
+// import pg from 'pg' ya no se usa, prisma lo manejará
+import pkg from '@prisma/client'
 import { createAuthRoutes } from './routes/auth.js'
 import { createFoodRoutes } from './routes/foods.js'
 
 dotenv.config()
 
-const { Pool } = pg
+// const { Pool } = pg, tampoco se usa, prisma lo manejará
 
+const { PrismaClient } = pkg
 const app = express()
 const PORT = process.env.PORT || 3000
+const prisma = new PrismaClient()
 
 // PostgreSQL connection pool
+/*
 const pool = new Pool({
   host: process.env.DB_HOST || 'db',
   port: process.env.DB_PORT || 5432,
@@ -20,8 +24,11 @@ const pool = new Pool({
   user: process.env.DB_USER || 'nutrical_user',
   password: process.env.DB_PASSWORD || 'nutrical_password',
 })
+igual ya no se usará esta funcion por prisma */ 
+
 
 // Test database connection
+/* para probar la conexión a la base de datos con prisma, se usa otra funcion distinta
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {
     console.error('Error connecting to database:', err)
@@ -29,12 +36,18 @@ pool.query('SELECT NOW()', (err, res) => {
     console.log('Database connected successfully at:', res.rows[0].now)
   }
 })
+*/
+// test database connection con prisma
+prisma.$connect()
+  .then(() => console.log('Database connected successfully'))
+  .catch((err) => console.error('Database connection error:', err))
 
 // Middleware
 app.use(cors())
 app.use(express.json())
 
 // Inicizlizar tablas de la bd
+/* la funcion initDB() ya no se usará, prisma se encargará ahora
 const initDB = async () => {
   try {
     // Crear tabla de usuarios
@@ -51,7 +64,6 @@ const initDB = async () => {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
-
     // Crear tabla de alimentos
     await pool.query(`
       CREATE TABLE IF NOT EXISTS foods (
@@ -71,8 +83,9 @@ const initDB = async () => {
     console.error('Error initializing database:', err)
   }
 }
+*/
 
-initDB()
+// initDB(), esta función ya no se usará, prisma se encargará de manejar las migraciones y la creación de tablas a través de su sistema de migraciones.
 
 // Routes
 app.get('/health', (req, res) => {
@@ -80,8 +93,8 @@ app.get('/health', (req, res) => {
 })
 
 // Mount routes
-app.use('/api/auth', createAuthRoutes(pool))
-app.use('/api/foods', createFoodRoutes(pool))
+app.use('/api/auth', createAuthRoutes(prisma)) // cambiamos el pool por prisma
+app.use('/api/foods', createFoodRoutes(prisma)) //cambiamos el pool por prisma
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {

@@ -1,6 +1,27 @@
-version: '3.8'
-
 services:
+  
+  backend:
+    build: ./backend
+    container_name: nutrical-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      ##- DB_HOST=db
+      ##- DB_PORT=5432
+      ##- DB_NAME=nutrical
+      ##- DB_USER=nutrical_user
+      ##- DB_PASSWORD=nutrical_password
+      ## esos atributos ya no se usan, prisma los manejará a través de DATABASE_URL
+      - DATABASE_URL=postgresql://nutrical_user:nutrical_password@db:5432/nutrical?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
   db:
     image: postgres:15-alpine
     container_name: nutrical-db
@@ -18,41 +39,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  backend:
-    build: ./backend
-    container_name: nutrical-backend
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./backend/.env
-    environment:
-      - PORT=3000
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_NAME=nutrical
-      - DB_USER=nutrical_user
-      - DB_PASSWORD=nutrical_password
-      - DATABASE_URL=postgresql://nutrical_user:nutrical_password@db:5432/nutrical?schema=public
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-
-  frontend:
-    build: ./frontend
-    container_name: nutrical-frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:3000
 
 volumes:
   postgres_data:
