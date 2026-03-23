@@ -106,9 +106,9 @@ Las variables de entorno están configuradas en el archivo `docker-compose.yml` 
 Primero Hay que iniciar sesion dentro de la terminal
 
 ```
-git config --global user.name "Tu Nombre"
+winget install --id GitHub.cli
 
-git config --global user.email "tu_correo@example.com"
+gh auth login
 ```
 
 - HTTPS
@@ -151,7 +151,6 @@ git remote add origin git@github.com:whither64/NutriCalBack.git
 
 git push -u origin main
 
-
 git remote set-url origin https://github.com/whither64/NutriaCalBack   
 
 git branch -M main
@@ -185,3 +184,12 @@ http://localhost:3000/health 	   # muestra el estado del backend
 
 
 http://localhost:5173/           # interfaz principal
+
+- Comando y Puerto para acceder a Prisma Studio
+
+```
+docker exec -it nutrical-backend npm run studio
+
+http://localhost:5555
+
+```
