@@ -16,29 +16,85 @@ datasource db {
 // aqui de definen las tablas, campos y relaciones
 // modelo de ejemplo, modificar segun se necesite
 
-model User {
-  id                Int      @id @default(autoincrement())
-  email             String   @unique
-  password          String
-  name              String
-  isVerified        Boolean  @default(false)
-  verificationToken String?
-  resetToken        String?
-  resetTokenExpiry  DateTime?
-  createdAt         DateTime @default(now())
-
-  foods             Food[]
+model tUsuarios {
+  id_usuario Int      @id @default(autoincrement())
+  nombre     String
+  correo     String    @unique
+  contraseña String
+  edad       Int
+  peso       Float
+  estatura   Float
+  objetivo   String?
+  // relaciones
+  tPlanAlim        tPlanAlim[]
+  tRegistroDiario  tRegistroDiario[]
+  @@map("tUsuarios")
 }
 
-model Food {
-  id        Int      @id @default(autoincrement())
-  userId    Int?
-  name      String
-  calories  Float
-  protein   Float
-  carbs     Float
-  fat       Float
-  createdAt DateTime @default(now())
+model tPlanAlim {
+  id_plan             Int       @id @default(autoincrement())
+  id_usuario          Int
+  calorias_diarias    Int
+  fecha_inicio        DateTime
+  fecha_fin           DateTime
 
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relaciones
+  usuario             tUsuarios @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("tPlanAlim")
+}
+
+model recetas {
+  id_receta             Int              @id @default(autoincrement())
+  nombre                String
+  descripcion           String
+  calorias              Int
+  tiempo_preparacion    Int
+  imagen_url            String?
+
+  // Relaciones
+  recetaAlimentos       tRecetaAlim[]
+
+  @@map("recetas")
+}
+
+model tAlimentos {
+  id_alimento        Int              @id @default(autoincrement())
+  nombre             String
+  calorias           Float
+  proteinas          Float
+  carbohidratos      Float
+  grasas             Float
+
+  // Relaciones
+  recetaAlimentos    tRecetaAlim[]
+
+  @@map("tAlimentos")
+}
+
+model tRecetaAlim {
+  id_receta      Int
+  id_alimento    Int
+  cantidad       Float
+
+  // Relaciones
+  receta         recetas      @relation(fields: [id_receta], references: [id_receta])
+  alimento       tAlimentos   @relation(fields: [id_alimento], references: [id_alimento])
+
+  // PK compuesta
+  @@id([id_receta, id_alimento])
+
+  @@map("tRecetaAlim")
+}
+
+model tRegistroDiario {
+  id_registro            Int         @id @default(autoincrement())
+  id_usuario             Int
+  fecha                  DateTime
+  calorias_consumidas    Int
+
+  // Relaciones
+  usuario                tUsuarios   @relation(fields: [id_usuario], references: [id_usuario])
+
+  @@map("tRegistroDiario")
 }

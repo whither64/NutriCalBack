@@ -5,16 +5,10 @@ services:
     container_name: nutrical-backend
     ports:
       - "3000:3000"
-      - "5555:5555"
+      - "5555:5555" # eliminar este puerto al convertir a producción
     env_file:
       - ./backend/.env
     environment:
-      ##- DB_HOST=db
-      ##- DB_PORT=5432
-      ##- DB_NAME=nutrical
-      ##- DB_USER=nutrical_user
-      ##- DB_PASSWORD=nutrical_password
-      ## esos atributos ya no se usan, prisma los manejará a través de DATABASE_URL
       - DATABASE_URL=postgresql://nutrical_user:nutrical_password@db:5432/nutrical?schema=public
     depends_on:
       db:
