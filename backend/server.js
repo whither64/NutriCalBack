@@ -6,6 +6,9 @@ import { PrismaClient } from '@prisma/client'
 import { createAuthRoutes } from './routes/auth.js'
 import { createUsuariosRoutes } from './routes/usuarios.js'
 import { createAlimentosRoutes } from './routes/alimentos.js'
+import { createRecetasRoutes } from './routes/recetas.js'
+import { createPlanesRoutes } from './routes/planes.js'
+import { createRegistrosRoutes } from './routes/registros.js'
 
 dotenv.config()
 
@@ -82,9 +85,12 @@ app.get('/api/debug', (req, res) => {
 // Montar rutas - solo después de conectar
 connectWithRetry().then((connected) => {
   if (connected) {
-    app.use('/api/usuarios', createUsuariosRoutes(prisma))
     app.use('/api/auth', createAuthRoutes(prisma))
+    app.use('/api/usuarios', createUsuariosRoutes(prisma))
     app.use('/api/alimentos', createAlimentosRoutes(prisma))
+    app.use('/api/recetas', createRecetasRoutes(prisma))
+    app.use('/api/planes', createPlanesRoutes(prisma))
+    app.use('/api/registros', createRegistrosRoutes(prisma))
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`)
       console.log(`📍 Debug: http://localhost:${PORT}/api/debug`)
